@@ -21,7 +21,9 @@ public class SecurityProdConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(req -> req
+        http
+                .requiresChannel(rcc -> rcc.anyRequest().requiresSecure())
+                .authorizeHttpRequests(req -> req
                 .requestMatchers("/myAccount", "/myBalance", "/myCards", "/myLoans").authenticated()
                 .requestMatchers("/contact", "/notices", "/error", "/register").permitAll()
                 .requestMatchers(toH2Console()).permitAll());
