@@ -1,8 +1,7 @@
 spring:
-  profiles:
-    active: default
   config:
-    import: application-prod.yml
+    activate:
+      on-profile: prod
   application:
     name: fsbank
   datasource:
@@ -10,13 +9,13 @@ spring:
     username: sa
     password: password
   jpa:
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
   h2:
     console:
-      enabled: true
+      enabled: false

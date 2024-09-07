@@ -15,9 +15,9 @@ import org.springframework.security.web.authentication.password.HaveIBeenPwnedRe
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 import static org.springframework.security.config.Customizer.withDefaults;
 
-@Profile("!prod")
+@Profile("prod")
 @Configuration
-public class SecurityConfig {
+public class SecurityProdConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

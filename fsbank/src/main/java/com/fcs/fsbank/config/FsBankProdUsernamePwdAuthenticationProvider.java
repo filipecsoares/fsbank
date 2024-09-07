@@ -12,10 +12,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Profile("!prod")
+@Profile("prod")
 @Component
 @RequiredArgsConstructor
-public class FsBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
+public class FsBankProdUsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -25,6 +25,9 @@ public class FsBankUsernamePwdAuthenticationProvider implements AuthenticationPr
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (!passwordEncoder.matches(pwd, userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid password!");
+        }
         return new UsernamePasswordAuthenticationToken(username,pwd,userDetails.getAuthorities());
     }
 
