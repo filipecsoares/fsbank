@@ -24,6 +24,7 @@ public class SecurityProdConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure())
                 .authorizeHttpRequests(req -> req
                 .requestMatchers("/myAccount", "/myBalance", "/myCards", "/myLoans").authenticated()
