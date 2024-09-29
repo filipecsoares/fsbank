@@ -27,7 +27,7 @@ public class SecurityProdConfig {
                 .sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure())
                 .authorizeHttpRequests(req -> req
-                .requestMatchers("/myAccount", "/myBalance", "/myCards", "/myLoans").authenticated()
+                .requestMatchers("/myAccount", "/myBalance", "/myCards", "/myLoans", "/user").authenticated()
                 .requestMatchers("/contact", "/notices", "/error", "/register").permitAll()
                 .requestMatchers(toH2Console()).permitAll());
         http.csrf(AbstractHttpConfigurer::disable);
