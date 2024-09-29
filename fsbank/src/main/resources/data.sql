@@ -2,15 +2,14 @@ CREATE TABLE `customer` (
                             `customer_id` int NOT NULL AUTO_INCREMENT,
                             `name` varchar(100) NOT NULL,
                             `email` varchar(100) NOT NULL,
-                            `mobile_number` varchar(20) NOT NULL,
                             `pwd` varchar(500) NOT NULL,
                             `role` varchar(100) NOT NULL,
                             `create_dt` date DEFAULT NULL,
                             PRIMARY KEY (`customer_id`)
 );
 
-INSERT INTO `customer` (`name`,`email`,`mobile_number`, `pwd`, `role`,`create_dt`)
-VALUES ('Happy','happy@example.com','5334122365', '{bcrypt}$2a$12$88.f6upbBvy0okEa7OfHFuorV29qeK.sVbB9VQ6J6dWM1bW6Qef8m', 'admin',CURDATE());
+INSERT INTO `customer` (`name`,`email`, `pwd`, `role`,`create_dt`)
+VALUES ('Happy','happy@example.com', '{bcrypt}$2a$12$88.f6upbBvy0okEa7OfHFuorV29qeK.sVbB9VQ6J6dWM1bW6Qef8m', 'admin',CURDATE());
 
 CREATE TABLE `accounts` (
                             `customer_id` int NOT NULL,
