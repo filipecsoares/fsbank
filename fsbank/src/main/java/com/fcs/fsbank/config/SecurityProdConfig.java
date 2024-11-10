@@ -2,7 +2,9 @@ package com.fcs.fsbank.config;
 
 import com.fcs.fsbank.exceptionhandler.CustomAccessDeniedHandler;
 import com.fcs.fsbank.exceptionhandler.CustomBasicAuthenticationEntryPoint;
+import com.fcs.fsbank.filter.AuthoritiesLoggingAfterFilter;
 import com.fcs.fsbank.filter.CsrfCookieFilter;
+import com.fcs.fsbank.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +34,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityProdConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
@@ -40,7 +42,7 @@ public class SecurityProdConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                        config.setAllowedOrigins(Collections.singletonList("https://localhost:4200"));
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -49,18 +51,19 @@ public class SecurityProdConfig {
                     }
                 }))
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                        .ignoringRequestMatchers( "/contact","/register")
+                        .ignoringRequestMatchers("/contact", "/register")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .requiresChannel(rcc -> rcc.anyRequest().requiresSecure())
-                .authorizeHttpRequests(req -> req
+                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // Only HTTPS
+                .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/myAccount").hasRole("USER")
                         .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/myLoans").hasRole("USER")
                         .requestMatchers("/myCards").hasRole("USER")
                         .requestMatchers("/user").authenticated()
-                .requestMatchers("/contact", "/notices", "/error", "/register").permitAll()
-                .requestMatchers(toH2Console()).permitAll());
+                        .requestMatchers("/notices", "/contact", "/error", "/register", "/invalidSession").permitAll());
         http.formLogin(withDefaults());
         http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
