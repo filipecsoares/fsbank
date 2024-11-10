@@ -3,6 +3,7 @@ package com.fcs.fsbank.config;
 import com.fcs.fsbank.exceptionhandler.CustomAccessDeniedHandler;
 import com.fcs.fsbank.exceptionhandler.CustomBasicAuthenticationEntryPoint;
 import com.fcs.fsbank.filter.AuthoritiesLoggingAfterFilter;
+import com.fcs.fsbank.filter.AuthoritiesLoggingAtFilter;
 import com.fcs.fsbank.filter.CsrfCookieFilter;
 import com.fcs.fsbank.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +57,7 @@ public class SecurityProdConfig {
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // Only HTTPS
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/myAccount").hasRole("USER")
