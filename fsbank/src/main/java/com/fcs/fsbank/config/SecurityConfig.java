@@ -2,10 +2,7 @@ package com.fcs.fsbank.config;
 
 import com.fcs.fsbank.exceptionhandler.CustomAccessDeniedHandler;
 import com.fcs.fsbank.exceptionhandler.CustomBasicAuthenticationEntryPoint;
-import com.fcs.fsbank.filter.AuthoritiesLoggingAfterFilter;
-import com.fcs.fsbank.filter.AuthoritiesLoggingAtFilter;
-import com.fcs.fsbank.filter.CsrfCookieFilter;
-import com.fcs.fsbank.filter.RequestValidationBeforeFilter;
+import com.fcs.fsbank.filter.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +55,8 @@ public class SecurityConfig {
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/myAccount").hasRole("USER")
