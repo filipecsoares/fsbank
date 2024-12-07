@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         /**
@@ -32,7 +33,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                 throws ServletException, IOException {
             String jwt = request.getHeader(ApplicationConstants.JWT_HEADER);
-            if(null != jwt) {
+            if(Objects.nonNull(jwt)) {
                 try {
                     Environment env = getEnvironment();
                     String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY,

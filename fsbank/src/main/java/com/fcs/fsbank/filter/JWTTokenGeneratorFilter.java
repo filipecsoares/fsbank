@@ -17,6 +17,7 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
@@ -32,7 +33,7 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication) {
+        if (Objects.nonNull(authentication)) {
             Environment env = getEnvironment();
             String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY,
                     ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
